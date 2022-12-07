@@ -65,14 +65,16 @@ app.post('/okok', async(req,res) =>{
   
   var imap = new Imap(imapConfig);
   Promise.promisifyAll(imap);
-  
+
+  imap.connect();
+
+
+
   imap.once("ready", execute);
   imap.once("error", function(err) {
       console.log("Connection error: " + err.stack);
   });
-  
-  imap.connect();
-  
+ 
   function execute() {
       imap.openBox("INBOX", false, function(err, mailBox) {
           if (err) {
@@ -80,7 +82,12 @@ app.post('/okok', async(req,res) =>{
               return;
           }
           imap.search(["UNSEEN"], function(err, results) {
-              if(!results || !results.length){console.log("No unread mails");imap.end();return;}
+              if(!results || !results.length){
+
+                console.log("No unread mails");
+                imap.end();
+                return;
+            }
               //  mark as seen
           imap.setFlags(results, ['\\Seen'], function(err) {
                   if (!err) {
@@ -116,7 +123,9 @@ app.post('/okok', async(req,res) =>{
             var printedmsg = `Mail from "${mail.from.text}" ___ With Subject: "${mail.subject}" `
             console.log(printedmsg);
             // console.log(mail.text);
-            client.sendMessage(phonenumber,printedmsg);
+           res( client.sendMessage(phonenumber,printedmsg));
+
+
             
           });
          
@@ -129,6 +138,7 @@ app.post('/okok', async(req,res) =>{
         
     res.send('saved')
 })
+
 port = process.env.PORT || 8000
 app.listen(port, () => {console.log('Client is listeningto port 8000!');});
 
