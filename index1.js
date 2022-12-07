@@ -9,7 +9,7 @@ require('dotenv').config();
 
 app  = express();
 
-app.use(cors());
+app.use(cors({origin:"https://tranquil-starburst-1808f9.netlify.app",credentials:true}));
 app.use(express.json());
 
 app.use( bodyParser.json() );       
